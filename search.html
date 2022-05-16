@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+</head>
+<body>
+    <div id="navbar">
+        <a href="index.html">Main Page</a>
+        <a href="search.html">Search Page</a>
+    </div>
+
+    <input type="text" id="query" oninput="debounce(search,1000)">
+
+    
+    <div id="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Serial no.</th>
+                    <th>Name</th>
+                    <th>Brewery Type</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>More Details</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</body>
+<script>
+    let timerId;
+    function debounce(func,delay){
+        if(timerId)
+        clearTimeout(timerId);
+
+        timerId = setTimeout(function(){
+            func()
+        },delay);
+    }
+    async function search(){
+        try {
+            document.querySelector('#container>table>tbody').innerHTML="";
+            let searchQuery=document.querySelector('#query').value;
+            const url=`https://api.openbrewerydb.org/breweries?by_name=${searchQuery}`;
+            const res = await fetch(url);
+            const result = await res.json();
+            
+            result.forEach((element,index)=>{
+                let tableRow=document.createElement('tr');
+                let serialNo=document.createElement('td');
+                let name=document.createElement('td');
+                let type=document.createElement('td');
+                let city=document.createElement('td');
+                let state=document.createElement('td');
+                let more=document.createElement('button');
+                
+                serialNo.innerText=index+1;
+                name.innerText=element.name;
+                type.innerText=element.brewery_type;
+                city.innerText=element.city;
+                state.innerText=element.state;
+                more.innerText="MORE DETAILS";
+                more.addEventListener('click',()=>{
+                    let data;
+                    if(localStorage.getItem('moreDetails') == null){
+                        data=[];
+                    }
+                    else{
+                        data=JSON.parse(localStorage.getItem('moreDetails'));
+                    }
+                    data.push(element.id);
+                    localStorage.setItem('moreDetails',JSON.stringify(data));
+                })
+                tableRow.append(serialNo,name,type,city,state,more);
+                document.querySelector('#container>table>tbody').append(tableRow);
+            });
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+</script>
+</html>

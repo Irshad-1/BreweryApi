@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brewery</title>
+    <style>
+        #container{
+            width:80%;
+            display: grid;
+            grid-template-columns: repeat(3,1fr);
+            margin: auto;
+            gap:40px;
+        }
+        #container >div{
+            border: 2px solid teal;
+        }
+        #container >div >div{
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <a href="index.html">Main Page</a>
+        <a href="search.html">Search Page</a>
+    </div>
+    <div id="container">
+
+    </div>
+</body>
+<script>
+    var data=JSON.parse(localStorage.getItem('moreDetails'));
+
+    data.forEach(async (element,index)=>{
+        const url=`https://api.openbrewerydb.org/breweries/${element}`;
+        const res = await fetch(url);
+        const result = await res.json();
+        var innerContainer=document.createElement('div');
+        var innerFlex1=document.createElement('div');
+        var innerFlex2=document.createElement('div');
+        var innerFlex3=document.createElement('div');
+        var innerFlex4=document.createElement('div');
+        var innerFlex5=document.createElement('div');
+
+        var heading1=document.createElement('h4');
+        var heading2=document.createElement('h4');
+        var heading3=document.createElement('h4');
+        var heading4=document.createElement('h4');
+        var heading5=document.createElement('h4');
+        
+        heading1.innerText="Name";
+        heading2.innerText="Country";
+        heading3.innerText="Brewery Type";
+        heading4.innerText="State";
+        heading5.innerText="City"
+
+        var name=document.createElement('h4');
+        var country=document.createElement('h4');
+        var type=document.createElement('h4');
+        var state=document.createElement('h4');
+        var city=document.createElement('h4');
+        
+        name.innerText=result.name;
+        country.innerText=result.country;
+        type.innerText=result.brewery_type;
+        state.innerText=result.state;
+        city.innerText=result.city;
+
+        innerFlex1.append(heading1,name);
+        innerFlex2.append(heading2,country);
+        innerFlex3.append(heading3,type);
+        innerFlex4.append(heading4,state);
+        innerFlex5.append(heading5,city);
+        innerContainer.append(innerFlex1,innerFlex2,innerFlex3,innerFlex4,innerFlex5);
+        document.getElementById('container').append(innerContainer);
+        
+    })
+</script>
+</html>
